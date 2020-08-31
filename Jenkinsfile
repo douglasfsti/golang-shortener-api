@@ -25,5 +25,30 @@ pipeline {
                 '''
             }
         }
+
+        stage('static source code analyzes') {
+            agent { docker { image 'golangci/golangci-lint' }}
+            sh 'golangci-lint --version'
+            sh 'golangci-lint run ./...'
+        }
+
+        stage('unit test') {
+            sh 'go test -v -coverprofile=coverage.out -covermode count > tests.out'
+
+            // convert tests results
+            sh "go get github.com/tebeka/go2xunit"
+            sh "go2xunit < tests.out -output tests.xml"
+            junit "tests.xml"
+
+            // convert coverage
+            sh "go get github.com/t-yuki/gocover-cobertura"
+            sh "gocover-cobertura < coverage.out > coverage.xml"
+
+            step([$class: 'CoberturaPublisher', coberturaReportFile: 'coverage.xml'])
+        }
+
+        stage('archive tests and cobertura reports') {
+            archiveArtifacts '**/tests.out, **/tests.xml, **/coverage.out, **/coverage.xml, **/coverage2.xml'
+        }
     }
 }
