@@ -14,8 +14,7 @@ const (
 	Redirect = "/v1/{code}"
 )
 
-func GetRouter(container config.Container) chi.Router {
-	router := chi.NewRouter()
+func GetRouter(router *chi.Mux, container config.Container) *chi.Mux {
 	EnableMiddleware(router)
 	ConfigureRoutes(router, container)
 
