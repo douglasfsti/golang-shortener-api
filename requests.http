@@ -1,0 +1,14 @@
+### Home
+GET http://localhost:8080/
+Accept: application/json
+
+### Short
+POST http://localhost:8080/v1/shortner
+Content-Type: application/json
+
+{
+    "url": "https://google.com"
+}
+
+### Redirect
+GET http://localhost:8080/v1/685483516953
